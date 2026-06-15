@@ -1,0 +1,9 @@
+body { font-family: Arial, sans-serif; background: #f6f7fb; margin: 0; padding: 0; }
+.page { max-width: 900px; margin: 0 auto; padding: 24px; }
+.toolbar, .note-form { display: flex; gap: 8px; margin-bottom: 16px; }
+.note-form { flex-direction: column; }
+.notes-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap: 12px; }
+.note-card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 12px; }
+.tags { color: #666; font-size: 12px; }
+input, textarea, button { padding: 8px; border-radius: 6px; border: 1px solid #ccc; }
+button { cursor: pointer; }
