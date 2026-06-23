@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react';
 import NotesList from './components/NotesList';
 import NoteForm from './components/NoteForm';
-import { fetchNotes, createNote, deleteNote } from './services/noteApi';
+import { fetchNotes, createNote, deleteNote, updateNote } from './services/noteApi';
 
 export default function App() {
   const [notes, setNotes] = useState();
   const [search, setSearch] = useState('');
+  const [showArchived, setShowArchived] = useState(false);
 
   useEffect(() => {
     loadNotes();
-  }, []);
+  }, [showArchived]);
 
   async function loadNotes() {
     try {
-      const data = await fetchNotes(search);
+      const data = await fetchNotes(search, showArchived);
       setNotes(data);
     } catch (error) {
       console.error('Failed to load notes', error);
@@ -26,8 +27,12 @@ export default function App() {
   }
 
   async function handleDelete(note) {
-    // INTENTIONAL BUG: frontend uses note.id instead of note._id
-    await deleteNote(note.id);
+    await deleteNote(note._id);
+    loadNotes();
+  }
+
+  async function handleArchiveToggle(note) {
+    await updateNote(note._id, { archived: !note.archived });
     loadNotes();
   }
 
@@ -41,9 +46,12 @@ export default function App() {
           placeholder="Search notes"
         />
         <button onClick={loadNotes}>Search</button>
+        <button onClick={() => setShowArchived(!showArchived)}>
+          {showArchived ? 'Show Active Notes' : 'Show Archived Notes'}
+        </button>
       </div>
       <NoteForm onCreate={handleCreate} />
-      <NotesList notes={notes} onDelete={handleDelete} />
+      <NotesList notes={notes} onDelete={handleDelete} onArchiveToggle={handleArchiveToggle} />
     </div>
   );
 }

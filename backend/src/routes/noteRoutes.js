@@ -3,13 +3,14 @@ const Note = require('../models/Note');
 
 const router = express.Router();
 
-// GET /api/notes?q=text
+// GET /api/notes?q=text&archived=true|false
 router.get('/', async (req, res) => {
   try {
-    // INTENTIONAL BUG: q may be undefined -> toLowerCase() crash
-    const query = req.query.q.toLowerCase();
+    const query = req.query.q ? req.query.q.toLowerCase() : '';
+    const archived = req.query.archived === 'true';
 
     const notes = await Note.find({
+      archived: archived,
       title: { $regex: query, $options: 'i' }
     }).sort({ createdAt: -1 });
 
@@ -24,11 +25,10 @@ router.post('/', async (req, res) => {
   try {
     const { title, content, tags } = req.body;
 
-    // INTENTIONAL BUG: tags may be undefined -> split crash
     const note = await Note.create({
       title,
       content,
-      tags: tags.split(',').map((t) => t.trim()),
+      tags: tags ? tags.split(',').map((t) => t.trim()) : [],
     });
 
     res.status(201).json(note);
@@ -40,8 +40,7 @@ router.post('/', async (req, res) => {
 // PUT /api/notes/:noteId
 router.put('/:noteId', async (req, res) => {
   try {
-    // INTENTIONAL BUG: wrong route param name used below
-    const note = await Note.findById(req.params.id);
+    const note = await Note.findById(req.params.noteId);
 
     if (!note) {
       return res.status(404).json({ message: 'Note not found' });
@@ -49,6 +48,9 @@ router.put('/:noteId', async (req, res) => {
 
     note.title = req.body.title ?? note.title;
     note.content = req.body.content ?? note.content;
+    if (req.body.archived !== undefined) {
+      note.archived = req.body.archived;
+    }
     await note.save();
 
     res.json(note);
