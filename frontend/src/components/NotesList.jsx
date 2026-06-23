@@ -1,4 +1,4 @@
-export default function NotesList({ notes, onDelete, onArchiveToggle }) {
+export default function NotesList({ notes, onDelete, onArchiveToggle, onPinToggle }) {
   if (!notes) return <div>No notes to display.</div>;
 
   return (
@@ -12,6 +12,9 @@ export default function NotesList({ notes, onDelete, onArchiveToggle }) {
           <button onClick={() => onDelete(note)}>Delete</button>
           <button onClick={() => onArchiveToggle(note)}>
             {note.archived ? 'Unarchive' : 'Archive'}
+          </button>
+          <button onClick={() => onPinToggle(note)}>
+            {note.pinned ? 'Unpin' : 'Pin'}
           </button>
         </div>
       ))}
