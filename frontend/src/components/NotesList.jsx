@@ -1,5 +1,7 @@
 export default function NotesList({ notes, onDelete }) {
-  // INTENTIONAL BUG: notes may be undefined on first load and map will crash
+  // FIX: handle undefined notes safely
+  if (!notes) return null;
+
   return (
     <div className="notes-grid">
       {notes.map((note) => (
