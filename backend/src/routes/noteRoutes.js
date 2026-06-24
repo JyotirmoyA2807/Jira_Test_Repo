@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
     if (archived !== undefined) {
       filter.archived = archived === 'true';
     }
-    const notes = await Note.find(filter).sort({ createdAt: -1 });
+    const notes = await Note.find(filter).sort({ pinned: -1, createdAt: -1 });
     res.json(notes);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -92,6 +92,36 @@ router.patch('/:id/unarchive', async (req, res) => {
       return res.status(404).json({ message: 'Note not found' });
     }
     note.archived = false;
+    await note.save();
+    res.json(note);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// PATCH /api/notes/:id/pin
+router.patch('/:id/pin', async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+    note.pinned = true;
+    await note.save();
+    res.json(note);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// PATCH /api/notes/:id/unpin
+router.patch('/:id/unpin', async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+    note.pinned = false;
     await note.save();
     res.json(note);
   } catch (error) {

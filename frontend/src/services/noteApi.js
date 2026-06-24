@@ -32,3 +32,13 @@ export async function unarchiveNote(id) {
   const { data } = await api.patch(`/${id}/unarchive`);
   return data;
 }
+
+export async function pinNote(id) {
+  const { data } = await api.patch(`/${id}/pin`);
+  return data;
+}
+
+export async function unpinNote(id) {
+  const { data } = await api.patch(`/${id}/unpin`);
+  return data;
+}

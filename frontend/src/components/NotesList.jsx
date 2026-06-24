@@ -1,4 +1,4 @@
-export default function NotesList({ notes, onDelete, onArchive, onUnarchive, showArchived }) {
+export default function NotesList({ notes, onDelete, onArchive, onUnarchive, showArchived, onPinToggle }) {
   // INTENTIONAL BUG: notes may be undefined on first load and map will crash
   return (
     <div className="notes-grid">
@@ -14,6 +14,9 @@ export default function NotesList({ notes, onDelete, onArchive, onUnarchive, sho
           {showArchived && (
             <button onClick={() => onUnarchive(note)}>Unarchive</button>
           )}
+          <button onClick={() => onPinToggle(note)}>
+            {note.pinned ? 'Unpin' : 'Pin'}
+          </button>
         </div>
       ))}
     </div>
