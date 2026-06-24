@@ -59,6 +59,46 @@ router.put('/:noteId', async (req, res) => {
   }
 });
 
+// Archive a note
+// POST /api/notes/:noteId/archive
+router.post('/:noteId/archive', async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.noteId);
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+    if (note.archived) {
+      // Already archived, idempotent
+      return res.json(note);
+    }
+    note.archived = true;
+    await note.save();
+    res.json(note);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Unarchive a note
+// POST /api/notes/:noteId/unarchive
+router.post('/:noteId/unarchive', async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.noteId);
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+    if (!note.archived) {
+      // Already unarchived, idempotent
+      return res.json(note);
+    }
+    note.archived = false;
+    await note.save();
+    res.json(note);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // DELETE /api/notes/:id
 router.delete('/:id', async (req, res) => {
   try {

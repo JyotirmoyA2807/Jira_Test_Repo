@@ -23,3 +23,13 @@ export async function updateNote(id, payload) {
   const { data } = await api.put(`/${id}`, payload);
   return data;
 }
+
+export async function archiveNote(id) {
+  const { data } = await api.post(`/${id}/archive`);
+  return data;
+}
+
+export async function unarchiveNote(id) {
+  const { data } = await api.post(`/${id}/unarchive`);
+  return data;
+}

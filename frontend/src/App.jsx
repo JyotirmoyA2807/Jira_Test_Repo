@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import NotesList from './components/NotesList';
 import NoteForm from './components/NoteForm';
-import { fetchNotes, createNote, deleteNote, updateNote } from './services/noteApi';
+import { fetchNotes, createNote, deleteNote, updateNote, archiveNote, unarchiveNote } from './services/noteApi';
 
 export default function App() {
   const [notes, setNotes] = useState();
@@ -10,6 +10,7 @@ export default function App() {
 
   useEffect(() => {
     loadNotes();
+    // eslint-disable-next-line
   }, [showArchived]);
 
   async function loadNotes() {
@@ -32,7 +33,11 @@ export default function App() {
   }
 
   async function handleArchiveToggle(note) {
-    await updateNote(note._id, { archived: !note.archived });
+    if (showArchived) {
+      await unarchiveNote(note._id);
+    } else {
+      await archiveNote(note._id);
+    }
     loadNotes();
   }
 
@@ -50,8 +55,13 @@ export default function App() {
           {showArchived ? 'Show Active Notes' : 'Show Archived Notes'}
         </button>
       </div>
-      <NoteForm onCreate={handleCreate} />
-      <NotesList notes={notes} onDelete={handleDelete} onArchiveToggle={handleArchiveToggle} />
+      {!showArchived && <NoteForm onCreate={handleCreate} />}
+      <NotesList
+        notes={notes}
+        onDelete={handleDelete}
+        onArchiveToggle={handleArchiveToggle}
+        showArchived={showArchived}
+      />
     </div>
   );
 }
