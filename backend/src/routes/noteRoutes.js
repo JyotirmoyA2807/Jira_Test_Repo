@@ -26,11 +26,15 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { title, content, tags } = req.body;
-    // INTENTIONAL BUG: tags may be undefined -> split crash
+    // Fix: handle undefined or empty tags safely
+    let tagsArray = [];
+    if (typeof tags === 'string' && tags.trim() !== '') {
+      tagsArray = tags.split(',').map((t) => t.trim());
+    }
     const note = await Note.create({
       title,
       content,
-      tags: tags.split(',').map((t) => t.trim()),
+      tags: tagsArray,
     });
     res.status(201).json(note);
   } catch (error) {
