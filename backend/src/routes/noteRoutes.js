@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     const notes = await Note.find({
       archived: archived,
       title: { $regex: query, $options: 'i' }
-    }).sort({ createdAt: -1 });
+    }).sort({ pinned: -1, createdAt: -1 });
 
     res.json(notes);
   } catch (error) {
@@ -50,6 +50,9 @@ router.put('/:noteId', async (req, res) => {
     note.content = req.body.content ?? note.content;
     if (req.body.archived !== undefined) {
       note.archived = req.body.archived;
+    }
+    if (req.body.pinned !== undefined) {
+      note.pinned = req.body.pinned;
     }
     await note.save();
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import NotesList from './components/NotesList';
 import NoteForm from './components/NoteForm';
-import { fetchNotes, createNote, deleteNote, updateNote } from './services/noteApi';
+import { fetchNotes, createNote, deleteNote, updateNote, togglePinNote } from './services/noteApi';
 
 export default function App() {
   const [notes, setNotes] = useState();
@@ -36,6 +36,11 @@ export default function App() {
     loadNotes();
   }
 
+  async function handlePinToggle(note) {
+    await togglePinNote(note._id, !note.pinned);
+    loadNotes();
+  }
+
   return (
     <div className="page">
       <h1>MERN Notes</h1>
@@ -51,7 +56,12 @@ export default function App() {
         </button>
       </div>
       <NoteForm onCreate={handleCreate} />
-      <NotesList notes={notes} onDelete={handleDelete} onArchiveToggle={handleArchiveToggle} />
+      <NotesList
+        notes={notes}
+        onDelete={handleDelete}
+        onArchiveToggle={handleArchiveToggle}
+        onPinToggle={handlePinToggle}
+      />
     </div>
   );
 }

@@ -23,3 +23,8 @@ export async function updateNote(id, payload) {
   const { data } = await api.put(`/${id}`, payload);
   return data;
 }
+
+export async function togglePinNote(id, pinned) {
+  const { data } = await api.put(`/${id}`, { pinned });
+  return data;
+}
