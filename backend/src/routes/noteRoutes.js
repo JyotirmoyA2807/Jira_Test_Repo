@@ -9,10 +9,11 @@ router.get('/', async (req, res) => {
     const query = req.query.q ? req.query.q.toLowerCase() : '';
     const archived = req.query.archived === 'true';
 
+    // Sort pinned notes first, then by createdAt descending
     const notes = await Note.find({
       archived: archived,
       title: { $regex: query, $options: 'i' }
-    }).sort({ createdAt: -1 });
+    }).sort({ pinned: -1, createdAt: -1 });
 
     res.json(notes);
   } catch (error) {
@@ -70,6 +71,52 @@ router.delete('/:id', async (req, res) => {
 
     await note.deleteOne();
     res.json({ message: 'Note deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// PUT /api/notes/:noteId/pin
+router.put('/:noteId/pin', async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.noteId);
+
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+
+    if (note.pinned) {
+      // Already pinned, idempotent
+      return res.json(note);
+    }
+
+    note.pinned = true;
+    await note.save();
+
+    res.json(note);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// PUT /api/notes/:noteId/unpin
+router.put('/:noteId/unpin', async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.noteId);
+
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+
+    if (!note.pinned) {
+      // Already unpinned, idempotent
+      return res.json(note);
+    }
+
+    note.pinned = false;
+    await note.save();
+
+    res.json(note);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
