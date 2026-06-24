@@ -25,10 +25,19 @@ router.post('/', async (req, res) => {
   try {
     const { title, content, tags } = req.body;
 
+    let tagsArray = [];
+    if (typeof tags === 'string') {
+      // Handle empty string or comma-separated string
+      tagsArray = tags.trim() === '' ? [] : tags.split(',').map((t) => t.trim()).filter((t) => t.length > 0);
+    } else if (Array.isArray(tags)) {
+      // If tags is already an array, filter out empty strings
+      tagsArray = tags.filter((t) => typeof t === 'string' && t.trim().length > 0);
+    } // else leave as empty array
+
     const note = await Note.create({
       title,
       content,
-      tags: tags ? tags.split(',').map((t) => t.trim()) : [],
+      tags: tagsArray,
     });
 
     res.status(201).json(note);
