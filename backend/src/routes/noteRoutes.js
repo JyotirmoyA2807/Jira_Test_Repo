@@ -9,9 +9,10 @@ router.get('/', async (req, res) => {
     // INTENTIONAL BUG: q may be undefined -> toLowerCase() crash
     const query = req.query.q.toLowerCase();
 
+    // Sort: pinned first, then createdAt desc
     const notes = await Note.find({
       title: { $regex: query, $options: 'i' }
-    }).sort({ createdAt: -1 });
+    }).sort({ pinned: -1, createdAt: -1 });
 
     res.json(notes);
   } catch (error) {
@@ -51,6 +52,36 @@ router.put('/:noteId', async (req, res) => {
     note.content = req.body.content ?? note.content;
     await note.save();
 
+    res.json(note);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// PATCH /api/notes/:id/pin
+router.patch('/:id/pin', async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+    note.pinned = true;
+    await note.save();
+    res.json(note);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// PATCH /api/notes/:id/unpin
+router.patch('/:id/unpin', async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+    note.pinned = false;
+    await note.save();
     res.json(note);
   } catch (error) {
     res.status(500).json({ message: error.message });
