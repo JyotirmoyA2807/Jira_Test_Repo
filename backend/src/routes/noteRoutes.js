@@ -6,13 +6,18 @@ const router = express.Router();
 // GET /api/notes?q=text
 router.get('/', async (req, res) => {
   try {
-    // INTENTIONAL BUG: q may be undefined -> toLowerCase() crash
-    const query = req.query.q.toLowerCase();
-
-    const notes = await Note.find({
-      title: { $regex: query, $options: 'i' }
-    }).sort({ createdAt: -1 });
-
+    // Fix: handle undefined or empty q safely
+    const q = req.query.q;
+    let notes;
+    if (typeof q === 'string' && q.trim() !== '') {
+      const query = q.toLowerCase();
+      notes = await Note.find({
+        title: { $regex: query, $options: 'i' }
+      }).sort({ createdAt: -1 });
+    } else {
+      // If q is undefined or empty, return all notes
+      notes = await Note.find().sort({ createdAt: -1 });
+    }
     res.json(notes);
   } catch (error) {
     res.status(500).json({ message: error.message });
