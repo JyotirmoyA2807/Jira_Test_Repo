@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import NotesList from './components/NotesList';
 import NoteForm from './components/NoteForm';
-import { fetchNotes, createNote, deleteNote } from './services/noteApi';
+import { fetchNotes, createNote, deleteNote, pinNote, unpinNote } from './services/noteApi';
 
 export default function App() {
   const [notes, setNotes] = useState();
   const [search, setSearch] = useState('');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     loadNotes();
@@ -13,9 +14,11 @@ export default function App() {
 
   async function loadNotes() {
     try {
+      setError(null);
       const data = await fetchNotes(search);
       setNotes(data);
     } catch (error) {
+      setError('Failed to load notes');
       console.error('Failed to load notes', error);
     }
   }
@@ -31,6 +34,20 @@ export default function App() {
     loadNotes();
   }
 
+  async function handlePinToggle(note) {
+    setError(null);
+    try {
+      if (note.pinned) {
+        await unpinNote(note._id);
+      } else {
+        await pinNote(note._id);
+      }
+      loadNotes();
+    } catch (err) {
+      setError('Failed to pin/unpin note');
+    }
+  }
+
   return (
     <div className="page">
       <h1>MERN Notes</h1>
@@ -42,8 +59,9 @@ export default function App() {
         />
         <button onClick={loadNotes}>Search</button>
       </div>
+      {error && <div className="error">{error}</div>}
       <NoteForm onCreate={handleCreate} />
-      <NotesList notes={notes} onDelete={handleDelete} />
+      <NotesList notes={notes} onDelete={handleDelete} onPinToggle={handlePinToggle} />
     </div>
   );
 }
