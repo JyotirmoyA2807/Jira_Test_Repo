@@ -6,8 +6,13 @@ const router = express.Router();
 // GET /api/notes?q=text
 router.get('/', async (req, res) => {
   try {
-    // INTENTIONAL BUG: q may be undefined -> toLowerCase() crash
-    const query = req.query.q.toLowerCase();
+    let query = req.query.q;
+    // Handle missing, null, empty, whitespace, or non-string query
+    if (query === undefined || query === null || (typeof query !== 'string') || query.trim() === '') {
+      // Return 200 with empty results for blank/missing input
+      return res.status(200).json([]);
+    }
+    query = query.toLowerCase();
 
     const notes = await Note.find({
       title: { $regex: query, $options: 'i' }
