@@ -18,3 +18,7 @@ It intentionally contains a few bugs and missing features so that Jira tickets c
 
 ## Example local base directory
 Use this repo folder as the `local.base_path` in your central project config.
+
+## Database Pooling and Connectivity
+- The backend now uses a configurable connection pool size for MongoDB (default: 20, override with `DB_MAX_POOL_SIZE` env variable).
+- Connection errors and pool exhaustion warnings are logged for easier debugging under load.
