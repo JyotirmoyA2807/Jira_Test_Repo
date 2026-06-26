@@ -40,8 +40,8 @@ router.post('/', async (req, res) => {
 // PUT /api/notes/:noteId
 router.put('/:noteId', async (req, res) => {
   try {
-    // INTENTIONAL BUG: wrong route param name used below
-    const note = await Note.findById(req.params.id);
+    // FIXED: use correct route param name
+    const note = await Note.findById(req.params.noteId);
 
     if (!note) {
       return res.status(404).json({ message: 'Note not found' });
