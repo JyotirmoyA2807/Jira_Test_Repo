@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
 
     const notes = await Note.find({
       title: { $regex: query, $options: 'i' }
-    }).sort({ createdAt: -1 });
+    }).sort({ pinned: -1, createdAt: -1 }); // Sort pinned notes first
 
     res.json(notes);
   } catch (error) {
@@ -52,6 +52,26 @@ router.put('/:noteId', async (req, res) => {
     await note.save();
 
     res.json(note);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// PATCH /api/notes/:id (for pin/unpin)
+router.patch('/:id', async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+    // Only allow updating pinned field
+    if (typeof req.body.pinned === 'boolean') {
+      note.pinned = req.body.pinned;
+      await note.save();
+      return res.json(note);
+    } else {
+      return res.status(400).json({ message: 'Missing or invalid pinned field' });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

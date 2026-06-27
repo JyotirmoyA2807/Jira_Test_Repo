@@ -18,3 +18,13 @@ export async function deleteNote(id) {
   const { data } = await api.delete(`/${id}`);
   return data;
 }
+
+export async function pinNote(id) {
+  const { data } = await api.patch(`/${id}`, { pinned: true });
+  return data;
+}
+
+export async function unpinNote(id) {
+  const { data } = await api.patch(`/${id}`, { pinned: false });
+  return data;
+}
