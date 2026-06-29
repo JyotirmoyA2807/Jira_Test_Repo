@@ -1,5 +1,21 @@
 export default function NotesList({ notes, onDelete }) {
-  // INTENTIONAL BUG: notes may be undefined on first load and map will crash
+  // Handle undefined, null, or non-array notes
+  if (!Array.isArray(notes)) {
+    return (
+      <div className="notes-grid">
+        <div className="empty-state">Loading notes...</div>
+      </div>
+    );
+  }
+
+  if (notes.length === 0) {
+    return (
+      <div className="notes-grid">
+        <div className="empty-state">No notes found.</div>
+      </div>
+    );
+  }
+
   return (
     <div className="notes-grid">
       {notes.map((note) => (
