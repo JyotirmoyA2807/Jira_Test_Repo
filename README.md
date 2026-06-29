@@ -18,3 +18,7 @@ It intentionally contains a few bugs and missing features so that Jira tickets c
 
 ## Example local base directory
 Use this repo folder as the `local.base_path` in your central project config.
+
+## Database Connection Pooling
+- The backend now limits MongoDB connection pool size and handles reconnection attempts to prevent pool exhaustion under load.
+- Health endpoint (`/api/health`) now reports database connectivity status.
