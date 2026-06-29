@@ -26,8 +26,8 @@ export default function App() {
   }
 
   async function handleDelete(note) {
-    // INTENTIONAL BUG: frontend uses note.id instead of note._id
-    await deleteNote(note.id);
+    // Fixed: use note._id instead of note.id
+    await deleteNote(note._id);
     loadNotes();
   }
 
