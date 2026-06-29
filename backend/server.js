@@ -12,7 +12,9 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
+  const mongoose = require('mongoose');
+  const status = mongoose.connection.readyState === 1 ? 'ok' : 'disconnected';
+  res.json({ status });
 });
 
 app.use('/api/notes', noteRoutes);
