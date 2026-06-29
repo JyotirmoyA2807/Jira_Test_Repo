@@ -1,7 +1,11 @@
 const express = require('express');
 const Note = require('../models/Note');
+const favoriteRoutes = require('./favoriteRoutes');
 
 const router = express.Router();
+
+// Mount favorite routes
+router.use('/', favoriteRoutes);
 
 // GET /api/notes?q=text
 router.get('/', async (req, res) => {
