@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import NotesList from './components/NotesList';
 import NoteForm from './components/NoteForm';
-import { fetchNotes, createNote, deleteNote } from './services/noteApi';
+import { fetchNotes, createNote, deleteNote, favoriteNote, unfavoriteNote } from './services/noteApi';
 
 export default function App() {
   const [notes, setNotes] = useState();
@@ -9,6 +9,7 @@ export default function App() {
 
   useEffect(() => {
     loadNotes();
+    // eslint-disable-next-line
   }, []);
 
   async function loadNotes() {
@@ -31,6 +32,19 @@ export default function App() {
     loadNotes();
   }
 
+  async function handleFavoriteToggle(note) {
+    try {
+      if (note.favorite) {
+        await unfavoriteNote(note._id);
+      } else {
+        await favoriteNote(note._id);
+      }
+      loadNotes();
+    } catch (error) {
+      console.error('Failed to toggle favorite', error);
+    }
+  }
+
   return (
     <div className="page">
       <h1>MERN Notes</h1>
@@ -43,7 +57,11 @@ export default function App() {
         <button onClick={loadNotes}>Search</button>
       </div>
       <NoteForm onCreate={handleCreate} />
-      <NotesList notes={notes} onDelete={handleDelete} />
+      <NotesList
+        notes={notes}
+        onDelete={handleDelete}
+        onFavoriteToggle={handleFavoriteToggle}
+      />
     </div>
   );
 }

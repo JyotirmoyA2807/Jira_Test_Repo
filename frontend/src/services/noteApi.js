@@ -18,3 +18,13 @@ export async function deleteNote(id) {
   const { data } = await api.delete(`/${id}`);
   return data;
 }
+
+export async function favoriteNote(id) {
+  const { data } = await api.patch(`/${id}/favorite`);
+  return data;
+}
+
+export async function unfavoriteNote(id) {
+  const { data } = await api.patch(`/${id}/unfavorite`);
+  return data;
+}
