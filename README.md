@@ -18,3 +18,17 @@ It intentionally contains a few bugs and missing features so that Jira tickets c
 
 ## Example local base directory
 Use this repo folder as the `local.base_path` in your central project config.
+
+## Database Pool Configuration
+To avoid connection pool exhaustion under load, you can configure the following environment variables:
+
+- `DB_MAX_POOL_SIZE`: Maximum number of concurrent database connections (default: 50)
+- `DB_MIN_POOL_SIZE`: Minimum number of idle connections (default: 5)
+
+Example `.env` additions:
+
+```
+DB_MAX_POOL_SIZE=50
+DB_MIN_POOL_SIZE=5
+```
+
